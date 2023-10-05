@@ -68,9 +68,8 @@
             setErrorMessage("한글은 입력할 수 없습니다.");
           } else {
             setErrorMessage("");
+            setValue(userValue);
           }
-
-          setValue(userValue);
         }
 
         function handleFormSubmit(event) {
