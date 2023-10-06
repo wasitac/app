@@ -45,6 +45,7 @@
           localStorage.setItem(key, JSON.stringify(value));
         },
         getItem: (key) => {
+          console.log("get");
           return JSON.parse(localStorage.getItem(key));
         },
       };
@@ -68,8 +69,8 @@
             setErrorMessage("한글은 입력할 수 없습니다.");
           } else {
             setErrorMessage("");
-            setValue(userValue);
           }
+          setValue(userValue);
         }
 
         function handleFormSubmit(event) {
@@ -78,8 +79,6 @@
           if (!value.trim()) {
             setErrorMessage("값이 없으므로 추가할 수 없습니다");
             return;
-          } else {
-            setErrorMessage("");
           }
 
           if (errorMessage == "") {
@@ -115,7 +114,7 @@
             />
             <button onClick={props.handleHeartClick}>
               {heartIcon}
-              {props.children}
+              {props.heartCounter}
             </button>
           </div>
         );
@@ -153,8 +152,13 @@
         const foodOne = "img/food-one.jpg";
         const foodTwo = "img/food-two.jpg";
         const foodThree = "img/food-three.jpg";
+        const food = [foodOne, foodTwo, foodThree];
         const [mainFood, setMainFood] = React.useState(foodOne);
 
+        // const [favorites, setFavorites] = React.useState(
+        //   jsonLocalStorage.getItem("favorites") || []
+        // );
+        // lazy init state
         const [favorites, setFavorites] = React.useState(() => {
           const initialState = jsonLocalStorage.getItem("favorites") || [];
           return initialState;
@@ -169,17 +173,23 @@
           const initialState = jsonLocalStorage.getItem("heartCounter");
           return initialState;
         });
+        // const [heartCounter, setHeartCounter] = React.useState(
+        //   jsonLocalStorage.getItem("heartCounter")
+        // );
 
         const choiceFavorites = favorites.includes(mainFood);
 
         function updateCounter(event) {
+          // const nextCounter = counter + 1;
+          // setCounter(nextCounter);
+          // jsonLocalStorage.setItem("counter", nextCounter);
+          // 이전 상태값이 첫 인수로 들어온다
           setCounter((pre) => {
-            const nextCounter = ++pre;
+            const nextCounter = pre + 1;
             jsonLocalStorage.setItem("counter", nextCounter);
+            setMainFood(food[nextCounter % 3]);
             return nextCounter;
           });
-          const food = [foodOne, foodTwo, foodThree];
-          setMainFood(foodTwo);
         }
 
         function handleHeartClick(event) {
@@ -191,7 +201,7 @@
 
           setFavorites((pre) => {
             const nextFavorites = [...pre, mainFood];
-            jsonLocalStorage.setItem("favorites", nextFavorites);
+            jsonLocalStorage.setItem("favorites", [...favorites, mainFood]);
             return nextFavorites;
           });
         }
@@ -204,16 +214,18 @@
               src={mainFood}
               handleHeartClick={handleHeartClick}
               choiceFavorites={choiceFavorites}
+              heartCounter={heartCounter}
             >
-              {heartCounter}
             </MainCard>
             <Favorites favorites={favorites} />
           </div>
         );
       };
 
+      // 리액트 엘리먼트가 추가될 위치
       const foodListInsert = document.querySelector("#food-li-insert");
 
+      // 리액트를 이용하여 엘리먼트 추가
       const root = ReactDOM.createRoot(foodListInsert);
       root.render(<App />);
     </script>
